@@ -1,4 +1,4 @@
-/* glowing_coals.ino - FastLED brazier coals */
+/* Glowing_coals.ino - FastLED brazier coals */
 
 #include <FastLED.h>
 
@@ -16,7 +16,7 @@
 #define TIMEOUT_BLINK_SEC 15
 #define TIMEOUT_BLINK_MS (TIMEOUT_BLINK_SEC * 1000)
 #define BLINK_DELAY_MS 20
-#define LOOP_MS 40  // was 30
+#define LOOP_MS 40 
 #define FADE_PERIOD 9
 #define BRIGHT_MIN 2
 #define BRIGHT_MAX 64
@@ -33,10 +33,10 @@
 CRGB leds[NUM_LEDS];
 
 DEFINE_GRADIENT_PALETTE(heatmap_gp){
-	0, 7, 0, 0,       //black
+	0, 30, 0, 0,       //black
 	180, 80, 2, 0,    //red
 	220, 255, 70, 0,  //bright yellow
-	255, 255, 255, 50
+	255, 255, 150, 50
 };
 
 CRGBPalette16 heat_pal = heatmap_gp;
@@ -74,10 +74,16 @@ void loop() {
 		/* Normal coal display */
 		EVERY_N_MILLISECONDS(LOOP_MS) {
 			for (int i = 0; i < NUM_LEDS; i++) {
-				uint8_t brightness;
+				uint8_t brightness = 0;
+				uint8_t min_brightness;
 				uint8_t pal_idx;
 
+				min_brightness =  (brightness - (brightness / 4));  // min = 3/4 of prev
 				brightness = inoise8(i * bright_scale, millis() / 5, millis() & 0xFFFF);
+				if (brightness < min_brightness) {		
+					brightness = min_brightness;
+				}
+
 				pal_idx = inoise8(i * pal_idx_scale, millis() / 10);
 
 #ifdef USE_THROB
